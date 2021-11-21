@@ -26,4 +26,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: |
+          python -m pip install pytest
+          python -m pip install coverage
           python -m py.test test.py --cov A2B
