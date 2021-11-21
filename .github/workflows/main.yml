@@ -24,8 +24,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - run: |
+      
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+          
+      - name: run pytest
+        run: |
           python -m pip install pytest
           python -m pip install pytest-cov
           python -m py.test test.py --cov A2B
