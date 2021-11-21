@@ -132,8 +132,8 @@ def printable_format(line):
     assert line.endswith('$')
     return line[1:-1]
 
-def execute(program, verbose=False):
-    line = '^' + raw_input().strip() + '$'
+def execute(program, line, verbose=False):
+    line = '^' + line.strip() + '$'
     operation_counter = 0
 
     while True:
@@ -172,6 +172,7 @@ if __name__ == '__main__':
         plain_text = input_file.read()
         program = parse(plain_text)
 
-    result = execute(program, args.verbose)
+    line = raw_input()
+    result = execute(program, line, args.verbose)
     print result
 
