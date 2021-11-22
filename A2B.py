@@ -136,18 +136,20 @@ def execute(program, line, verbose=False):
     line = '^' + line.strip() + '$'
     operation_counter = 0
 
+    for expr in program.exprs:
+        expr.executed = 0
+
     while True:
+        executed = EXECUTED_NONE
         for expr in program.exprs:
             executed, output = expr.Execute(line)
             operation_counter += 1
-            if executed == EXECUTED_RETURN:
-                return output
-            elif executed == EXECUTED_DONE:
+            if executed in [EXECUTED_DONE, EXECUTED_RETURN]:
                 if verbose:
                     print >> sys.stderr, 'Step %d:'% operation_counter
                     print >> sys.stderr, '  L%d: %s' % (expr.line_no, expr.plain_text)
                     print >> sys.stderr, '>> %s' % printable_format(line)
-                    print >> sys.stderr, '<< %s' % printable_format(output)
+                    print >> sys.stderr, '<< %s%s' % ('(return)' if executed == EXECUTED_RETURN else '', printable_format(output))
                     print >> sys.stderr, ''
                 line = output
                 break
@@ -159,6 +161,10 @@ def execute(program, line, verbose=False):
 
         if len(line) > LINE_LENGTH_LIMIT:
             raise A2BExecutionException("String Length Limit Exceeded")
+
+        if executed == EXECUTED_RETURN:
+            break
+
     return printable_format(line)
 
 if __name__ == '__main__':
