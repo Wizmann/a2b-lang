@@ -28,9 +28,10 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '2.x'
-          
-      - name: run pytest
+      - name: pip install
         run: |
           python -m pip install pytest
           python -m pip install pytest-cov
+      - name: run pytest
+        run: |
           python -m py.test test.py --cov A2B
