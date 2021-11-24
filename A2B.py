@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/usr/bin/python2
 #coding=utf-8
 import sys
 import re
@@ -112,9 +112,23 @@ def parse(program):
     lines = program.split("\n")
 
     p = Program([])
+    commented_flag = False
     for line_no, line in enumerate(lines):
-        if not line.strip():
+        line = line.strip()
+        if not line:
             continue
+
+        if commented_flag and line.endswith('*/'):
+            commented_flag = False
+            continue
+
+        if commented_flag:
+            continue
+
+        if line.startswith('/*'):
+            commented_flag = True
+            continue
+
         if line.count('=') != 1:
             raise A2BParseException(line_no, 'Each line should have one and only one "="')
         left, right = map(lambda s: Pattern.Parse(line_no, s.strip()), line.split('='))
