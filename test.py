@@ -8,6 +8,14 @@ class Test1(TestCase):
     def test_a2b(self):
         program = '''
             a=b
+
+            /*
+            a=c
+            */
+
+            /*
+            a=b=c=d
+            a=d */
         '''
 
         p = parse(program)
@@ -26,6 +34,12 @@ class Test1(TestCase):
             aa=a
             bb=b
             cc=c
+            
+            /* foo bar */
+            /* foo
+               bar
+               baz
+            */
         '''
 
         p = parse(program)
