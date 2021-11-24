@@ -157,8 +157,8 @@ def execute(program, line, verbose=False):
         executed = EXECUTED_NONE
         for expr in program.exprs:
             executed, output = expr.Execute(line)
-            operation_counter += 1
             if executed in [EXECUTED_DONE, EXECUTED_RETURN]:
+                operation_counter += 1
                 if verbose:
                     print >> sys.stderr, 'Step %d:'% operation_counter
                     print >> sys.stderr, '  L%d: %s' % (expr.line_no, expr.plain_text)
