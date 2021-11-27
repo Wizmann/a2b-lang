@@ -24,7 +24,7 @@ class A2BParseException(Exception):
         super(A2BParseException, self).__init__(self.message)
 
 class A2BExecutionException(Exception):
-    def __init__(self):
+    def __init__(self, description):
         self.message = '[Runtime Error]: %s' % (description)
         super(A2BExecutionException, self).__init__(self.message)
 
