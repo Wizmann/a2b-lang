@@ -1,0 +1,1 @@
+{"id":"4-12","title":"To B or not to B","input":"一个仅由 a、b、c 组成的字符串。","output":"如果输入包含 b，将每个 a 替换为 b；否则将每个 a 替换为 c。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":9},"samples":[{"input":"aabc","output":"bbbc"},{"input":"acac","output":"cccc"}]}

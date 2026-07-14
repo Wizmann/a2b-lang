@@ -1,0 +1,1 @@
+{"id":"5-1","title":"计数","input":"一个二进制数（不含前导零）。","output":"输出与该二进制数数值相等数量的 a。","constraints":{"alphabet":["0","1"],"min_value":1,"max_value":63,"max_a2b_lines":7},"samples":[{"input":"10","output":"aa"},{"input":"111","output":"aaaaaaa"}]}

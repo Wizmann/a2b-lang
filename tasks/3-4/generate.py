@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""Generate deterministic JSONL test sets for task 3-4."""
+
+import argparse
+import json
+import random
+from pathlib import Path
+
+from groundtruth import solve
+
+ALPHABET = "abc"
+MIN_LENGTH = 2
+MAX_LENGTH = 8
+DEFAULT_CASE_COUNT = 200
+DEFAULT_SEED = 3004
+
+MANUAL_CASES = (
+    "ab",
+    "aab",
+    "abb",
+    "aacbbb",
+    "ababab",
+    "aaabbb",
+    "acccb",
+    "abacb",
+    "aaaacbbb",
+    "aaaaaaab",
+    "abbbbbbb",
+    "aabacbb",
+    "aacacbbb",
+    "aaacbbab",
+    "abcababb",
+    "aabcbabb",
+    "acacacb",
+    "aaabbbcb",
+    "aabcabbb",
+    "aaaacccb",
+)
+
+
+def generate_cases(count, seed):
+    rng = random.Random(seed)
+    generated = 0
+    while generated < count:
+        length = rng.randint(MIN_LENGTH, MAX_LENGTH)
+        leading = rng.randint(1, length - 1)
+        trailing = rng.randint(1, length - leading)
+        middle_length = length - leading - trailing
+        middle = "".join(rng.choice(ALPHABET) for _ in range(middle_length))
+        value = "a" * leading + middle + "b" * trailing
+        if value[0] != "a" or value[-1] != "b":
+            continue
+        generated += 1
+        yield value
+
+
+def write_cases(output, values):
+    with output.open("w", encoding="utf-8") as output_file:
+        for value in values:
+            case = {"input": value, "output": solve(value)}
+            output_file.write(json.dumps(case, ensure_ascii=False) + "\n")
+
+
+def write_pretest(output):
+    write_cases(output, MANUAL_CASES[:10])
+
+
+def write_full(output, count, seed):
+    write_cases(output, list(MANUAL_CASES) + list(generate_cases(count, seed)))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--count", type=int, default=DEFAULT_CASE_COUNT)
+    parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument("--directory", type=Path, default=Path(__file__).parent)
+    args = parser.parse_args()
+
+    args.directory.mkdir(parents=True, exist_ok=True)
+    write_pretest(args.directory / "testcase_pretest.jsonl")
+    write_full(args.directory / "testcase_full.jsonl", args.count, args.seed)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,1 @@
+{"id":"5-2","title":"A+1","input":"一个二进制数（不含前导零）。","output":"输入二进制数加 1 后的二进制表示。","constraints":{"alphabet":["0","1"],"min_value":1,"max_value":1023,"max_a2b_lines":4},"samples":[{"input":"10","output":"11"},{"input":"111","output":"1000"}]}

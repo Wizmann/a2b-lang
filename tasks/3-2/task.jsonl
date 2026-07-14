@@ -1,0 +1,1 @@
+{"id":"3-2","title":"旋转","input":"一个由 a、b、c 组成且至少包含一个 a 的字符串。","output":"将第一个 a 之前的所有字符移动到字符串末尾。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"requires_a":true,"max_a2b_lines":2},"samples":[{"input":"cbab","output":"abcb"},{"input":"cba","output":"acb"},{"input":"abc","output":"abc"}]}

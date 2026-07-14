@@ -1,0 +1,1 @@
+{"id":"1-2","title":"大写","input":"一个仅由 a、b、c 组成的字符串。","output":"将每个字母替换为相应的大写字母：a→A、b→B、c→C。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":3},"samples":[{"input":"abc","output":"ABC"},{"input":"aabbcc","output":"AABBCC"}]}

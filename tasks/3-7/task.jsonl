@@ -1,0 +1,1 @@
+{"id":"3-7","title":"回文串","input":"一个仅由 a、b、c 组成的字符串。","output":"如果输入正向和反向读起来相同，输出 true，否则输出 false。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":8},"samples":[{"input":"abba","output":"true"},{"input":"cbabc","output":"true"},{"input":"abca","output":"false"}]}

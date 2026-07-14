@@ -1,0 +1,1 @@
+{"id":"3-6","title":"最多 2","input":"一个仅由 a、b、c 组成且只有一个字母出现次数最多的字符串。","output":"只保留出现次数最多的字母，删除其余字母。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"unique_maximum":true,"max_a2b_lines":11},"samples":[{"input":"cabcca","output":"ccc"},{"input":"bbc","output":"bb"},{"input":"a","output":"a"}]}

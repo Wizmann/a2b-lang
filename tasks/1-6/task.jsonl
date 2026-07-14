@@ -1,0 +1,1 @@
+{"id":"1-6","title":"比较","input":"一个仅由 a、b 组成的字符串。","output":"输出出现次数更多的字母。","constraints":{"alphabet":["a","b"],"min_length":1,"max_length":11,"counts_must_differ":true,"max_a2b_lines":4},"samples":[{"input":"abb","output":"b"},{"input":"ababa","output":"a"}]}

@@ -1,0 +1,10 @@
+(once)=(start)X
+A=(end)a
+B=(end)b
+C=(end)c
+Xa=AaY
+Xb=BbY
+Xc=CcY
+(once)Y=X
+(once)Y=X
+Y=

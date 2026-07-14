@@ -1,0 +1,1 @@
+{"id":"3-5","title":"首尾","input":"一个仅由 a、b、c 组成的字符串。","output":"如果输入的首个字母和最后一个字母相同，输出 true，否则输出 false。","constraints":{"alphabet":["a","b","c"],"min_length":2,"max_length":7,"max_a2b_lines":7},"samples":[{"input":"abc","output":"false"},{"input":"abca","output":"true"},{"input":"babab","output":"true"}]}

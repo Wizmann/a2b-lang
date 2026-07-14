@@ -1,0 +1,1 @@
+{"id":"4-16","title":"合并","input":"两个仅由 a、b 组成且长度相同的字符串，以逗号隔开。","output":"将两个字符串的字母交替合并。","constraints":{"alphabet":["a","b"],"separator":",","min_length":1,"max_length":5,"equal_lengths":true,"max_a2b_lines":9},"samples":[{"input":"aaa,bbb","output":"ababab"},{"input":"abab,baba","output":"abbaabba"}]}

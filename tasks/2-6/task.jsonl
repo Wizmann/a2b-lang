@@ -1,0 +1,1 @@
+{"id":"2-6","title":"独一无二","input":"一个仅由 a、b、c 组成的字符串。","output":"将字符串按连续相同字母划分为若干段；当且仅当恰好有一个连续段的长度为 1 时，输出 true，否则输出 false。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":13},"samples":[{"input":"aabcc","output":"true"},{"input":"abbcc","output":"true"},{"input":"babbcc","output":"false"}]}

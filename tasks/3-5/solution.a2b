@@ -1,0 +1,7 @@
+(end)aXaY=(return)true
+(end)bXbY=(return)true
+(end)cXcY=(return)true
+(start)a=(end)XaY
+(start)b=(end)XbY
+(start)c=(end)XcY
+=(return)false

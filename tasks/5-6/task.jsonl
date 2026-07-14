@@ -1,0 +1,1 @@
+{"id":"5-6","title":"A/B","input":"两个二进制数，用 / 隔开。","output":"输出商和余数，格式为二进制商,二进制余数。","constraints":{"alphabet":["0","1"],"separator":"/","min_value":1,"max_value":31,"max_a2b_lines":40},"samples":[{"input":"1000/11","output":"10,10"},{"input":"10/11","output":"0,10"}]}

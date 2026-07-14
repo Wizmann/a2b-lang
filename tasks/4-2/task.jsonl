@@ -1,0 +1,1 @@
+{"id":"4-2","title":"移除 2","input":"一个仅由 a、b、c 组成的字符串。","output":"移除输入中最靠左的三个 a；如果输入少于三个 a，则移除全部 a。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":3},"samples":[{"input":"abababa","output":"bbba"},{"input":"aaaabc","output":"abc"}]}

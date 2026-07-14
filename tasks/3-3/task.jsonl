@@ -1,0 +1,1 @@
+{"id":"3-3","title":"A到B 2","input":"一个仅由 a、b、c 组成的字符串。","output":"将输入头部和尾部的每个连续 a 替换为 b；中间部分保持不变。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":4},"samples":[{"input":"abc","output":"bbc"},{"input":"abcba","output":"bbcbb"},{"input":"acacaa","output":"bcacbb"}]}

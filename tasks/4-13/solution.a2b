@@ -1,0 +1,10 @@
+(once)=(end)Y
+(start)aY=(return)a
+(start)bY=(return)b
+(start)cY=(return)c
+aYX=Y
+bYX=Y
+cYX=Y
+(start)a=(end)X
+(start)b=(end)X
+(start)c=(end)X

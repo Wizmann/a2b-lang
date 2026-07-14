@@ -1,0 +1,9 @@
+(once)=(start)X
+(start)Xa=(end)a
+(start)Xb=(end)b
+(start)Xc=(end)c
+Xa=(start)XaX
+Xb=(start)XbX
+Xc=(start)XcX
+X,=
+,=,X

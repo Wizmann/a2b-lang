@@ -1,0 +1,1 @@
+{"id":"1-3","title":"去重","input":"一个仅由 a、b、c 组成的字符串。","output":"将每段连续的相同字母替换为该字母本身的单个字符。","constraints":{"alphabet":["a","b","c"],"min_length":1,"max_length":7,"max_a2b_lines":3},"samples":[{"input":"aabbbcc","output":"abc"},{"input":"abccba","output":"abcba"}]}

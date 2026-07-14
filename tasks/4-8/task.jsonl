@@ -1,0 +1,1 @@
+{"id":"4-8","title":"复制","input":"一个仅由 a、b、c 组成且长度至少为 3 的字符串。","output":"复制字符串的前三个字母，并将副本添加到字符串末尾。","constraints":{"alphabet":["a","b","c"],"min_length":3,"max_length":7,"max_a2b_lines":11},"samples":[{"input":"aaabbb","output":"aaabbbaaa"},{"input":"aabbcc","output":"aabbccaab"}]}

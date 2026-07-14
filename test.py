@@ -1,505 +1,225 @@
-from unittest import TestCase
+#!/usr/bin/env python3
 
-import re
-from A2B import parse, execute
-from collections import Counter
+import sys
+import unittest
+from io import StringIO
 
-class Test1(TestCase):
-    def test_a2b(self):
-        program = '''
-            a=b
+import A2B
+from A2B import A2BExecutionException, A2BParseException, execute, parse
 
-            /*
-            a=c
-            */
+def rules(*lines):
+    return "\n".join(lines)
 
-            /*
-            a=b=c=d
-            a=d */
-        '''
 
-        p = parse(program)
+class ExecutionModelTests(unittest.TestCase):
+    def test_empty_program_is_identity(self):
+        program = parse("")
+        for value in ("", "abc", " ()=#$^ "):
+            self.assertEqual(value, execute(program, value))
 
-        cases = [
-            ('abc', 'bbc'),
-            ('aab', 'bbb'),
-            ('aabbac', 'bbbbbc'),
-        ]
+    def test_plain_rule_replaces_all_occurrences_over_multiple_steps(self):
+        program = parse("a=b")
+        self.assertEqual("bbc", execute(program, "abc"))
+        self.assertEqual("bbb", execute(program, "aab"))
+        self.assertEqual("bbbbbc", execute(program, "aabbac"))
 
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
+    def test_each_step_restarts_rule_scan_from_the_top(self):
+        program = parse(rules("a=b", "ba=x"))
+        self.assertEqual("bb", execute(program, "aa"))
 
-    def test_singleton(self):
-        program = '''
-            aa=a
-            bb=b
-            cc=c
-            
-            /* foo bar */
-            /* foo
-               bar
-               baz
-            */
-        '''
+    def test_first_applicable_rule_has_priority(self):
+        program = parse(rules("a=x", "a=y", "x="))
+        self.assertEqual("", execute(program, "a"))
 
-        p = parse(program)
+    def test_replacement_uses_leftmost_match(self):
+        program = parse("ab=X")
+        stderr = StringIO()
+        original_stderr = sys.stderr
+        try:
+            sys.stderr = stderr
+            self.assertEqual("XX", execute(program, "abab", verbose=True))
+        finally:
+            sys.stderr = original_stderr
+        trace = stderr.getvalue()
+        self.assertIn("Step 1:", trace)
+        self.assertIn("Step 2:", trace)
+        self.assertNotIn("Step 3:", trace)
 
-        input_list = [
-            'aaaabbcccc',
-            'abccc',
-            'cccbba'
-        ]
+    def test_empty_patterns_match(self):
+        self.assertEqual("ok", execute(parse("=(return)ok"), "anything"))
+        self.assertEqual("Xab", execute(parse("(once)=(start)X"), "ab"))
+        self.assertEqual("abX", execute(parse("(once)=(end)X"), "ab"))
 
-        cases = []
+    def test_blank_program_and_blank_input(self):
+        self.assertEqual("", execute(parse("\n\n"), ""))
 
-        for input_data in input_list:
-            expected = re.sub(r"(.)\1+", r"\1", input_data)
-            cases.append((input_data, expected))
 
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
+class KeywordTests(unittest.TestCase):
+    def test_return_discards_current_state_and_halts(self):
+        program = parse(rules("a=x", "x=(return)done", "x=wrong"))
+        self.assertEqual("done", execute(program, "cat"))
+        self.assertEqual("", execute(parse("=(return)"), "abc"))
+
+    def test_start_on_left_only_matches_a_prefix(self):
+        program = parse("(start)a=X")
+        self.assertEqual("Xba", execute(program, "aba"))
+        self.assertEqual("ba", execute(program, "ba"))
+
+    def test_end_on_left_only_matches_a_suffix(self):
+        program = parse("(end)a=X")
+        self.assertEqual("abX", execute(program, "aba"))
+        self.assertEqual("ab", execute(program, "ab"))
+
+    def test_start_on_right_moves_replacement_to_prefix(self):
+        self.assertEqual("Xac", execute(parse("b=(start)X"), "abc"))
+
+    def test_end_on_right_moves_replacement_to_suffix(self):
+        self.assertEqual("acX", execute(parse("b=(end)X"), "abc"))
+
+    def test_keywords_on_both_sides_combine(self):
+        self.assertEqual("bcX", execute(parse("(start)a=(end)X"), "abc"))
+        self.assertEqual("Xab", execute(parse("(end)c=(start)X"), "abc"))
+
+    def test_once_rule_executes_at_most_once(self):
+        program = parse(rules("(once)a=aa", "a=b"))
+        self.assertEqual("bb", execute(program, "a"))
+
+    def test_once_is_not_consumed_until_the_rule_matches(self):
+        program = parse(rules("(once)aa=x", "b=a"))
+        self.assertEqual("x", execute(program, "ba"))
+
+    def test_once_state_resets_for_each_execute_call(self):
+        program = parse(rules("(once)a=x", "x=y"))
+        self.assertEqual("y", execute(program, "a"))
+        self.assertEqual("y", execute(program, "a"))
+
+
+class CharacterAndWhitespaceTests(unittest.TestCase):
+    def test_caret_and_dollar_are_ordinary_characters(self):
+        program = parse(rules("^=A", "$=B"))
+        self.assertEqual("AxB", execute(program, "^x$"))
+
+    def test_input_whitespace_is_preserved(self):
+        value = " \tabc  "
+        self.assertEqual(value, execute(parse(""), value))
+
+    def test_spaces_in_rule_patterns_are_significant(self):
+        self.assertEqual("x", execute(parse(" a=x"), " a"))
+        self.assertEqual(" ", execute(parse("a= "), "a"))
+
+    def test_non_ascii_program_text_is_rejected(self):
+        with self.assertRaises(A2BParseException):
+            parse("a=中")
+
+    def test_non_ascii_or_multiline_input_is_rejected(self):
+        program = parse("")
+        for value in ("中文", "a\nb", "a\rb"):
+            with self.assertRaises(A2BExecutionException):
+                execute(program, value)
+
+
+class SyntaxTests(unittest.TestCase):
+    def assert_parse_error(self, source):
+        with self.assertRaises(A2BParseException):
+            parse(source)
+
+    def test_each_nonempty_line_has_exactly_one_equals_sign(self):
+        self.assert_parse_error("abc")
+        self.assert_parse_error("a=b=c")
+
+    def test_unknown_or_malformed_keywords_are_rejected(self):
+        self.assert_parse_error("(foo)a=b")
+        self.assert_parse_error("(starta=b")
+        self.assert_parse_error("(once)(start)a=b")
+
+    def test_keyword_placement_is_checked(self):
+        self.assert_parse_error("(return)a=b")
+        self.assert_parse_error("a=(once)b")
+
+    def test_parentheses_cannot_be_literal_pattern_text(self):
+        self.assert_parse_error("a(b=c")
+        self.assert_parse_error("a=b)c")
+
+    def test_each_side_accepts_at_most_one_legal_keyword(self):
+        sources = (
+            "(start)a=b", "(end)a=b", "(once)a=b",
+            "a=(start)b", "a=(end)b", "a=(return)b",
+            "(once)a=(return)b", "(start)a=(end)b",
+        )
+        for source in sources:
+            self.assertEqual(1, len(parse(source).exprs))
+
+    def test_crlf_programs_are_accepted(self):
+        program = parse("a=A\r\nb=B\r\n")
+        self.assertEqual("AB", execute(program, "ab"))
+
+    def test_error_reports_physical_line_number(self):
+        with self.assertRaises(A2BParseException) as raised:
+            parse("a=b\n\ninvalid")
+        self.assertIn("L3", str(raised.exception))
+
+
+class RepresentativeProgramTests(unittest.TestCase):
+    def test_uppercase(self):
+        program = parse(rules("a=A", "b=B", "c=C"))
+        self.assertEqual("ABACBCAB", execute(program, "abacbcab"))
 
     def test_sort(self):
-        input_list = [
-            "a",
-            "aa",
-            "bab",
-            "cacb",
-            "bbacc",
-            "aabcba",
-            "cacbccc",
-            "bbbbbacc",
-            "bacbabaca",
-            "ccaacbaaaa",
-        ]
-
-        program = '''
-            ba=ab
-            ca=ac
-            cb=bc
-        '''
-
-        p = parse(program)
-
-        cases = []
-
-        for input_data in input_list:
-            expected = ''.join(sorted(input_data))
-            cases.append((input_data, expected))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-    def test_compare(self):
-        input_list = [
-            "ababbbabbb",
-            "abb",
-            "abbbb",
-            "ababbabbbb",
-            "baaab",
-            "aababbbbbb",
-            "bbbaaaabaaa",
-            "bbaaabaa",
-            "baabbaabbaa",
-            "baabaaaa",
-            "bbaaaabab",
-            "abaaaabbbabab",
-            "bbbbbabaaa",
-            "bbabababa",
-            "aabaabab",
-            "baaaab",
-            "abaaaaaa",
-            "bbabaaa",
-            "babababbb",
-            "abbaa",
-            "a",
-            "aa",
-            "bbbbb",
-        ]
-
-        program = '''
-            ba=ab
-            ab=
-            aa=a
-            bb=b
-        '''
-
-        p = parse(program)
-
-        cases = []
-
-        for input_data in input_list:
-            expected = sorted(input_data)[len(input_data) / 2]
-            cases.append((input_data, expected))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-class Test2(TestCase):
-    def test_hello_world(self):
-        input_list = [
-            "abc",
-            "a",
-            "",
-            "c"
-        ]
-
-        program = '''
-            =(return)helloworld
-        '''
-
-        p = parse(program)
-
-        for input_data in input_list:
-            self.assertEqual('helloworld', execute(p, input_data))
-
-    def test_aaa(self):
-        input_list = [
-            "aaaaa",
-            "aaa",
-            "aabbba",
-            "abababababcc!!!"
-        ]
-
-        program = '''
-            aaa=(return)true
-            b=
-            c=
-            =(return)false
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            if 'aaa' in input_data.replace('b', '').replace('c', ''):
-                cases.append((input_data, "true"))
-            else:
-                cases.append((input_data, "false"))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-
-    def test_odd(self):
-        input_list = [
-            "abc",
-            "ab",
-            "aabbba",
-            "abababababcc"
-        ]
-
-        program = '''
-            ba=ab
-            ca=ac
-            cb=bc
-            aaa=a
-            bbb=b
-            ccc=c
-            aa=(return)false
-            bb=(return)false
-            cc=(return)false
-            =(return)true
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            c = Counter(input_data)
-            for value in c.values():
-                if value != 0 and value % 2 == 0:
-                    cases.append((input_data, "false"))
-                    break
-            else:
-                cases.append((input_data, "true"))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-    def test_least(self):
-        input_list = [
-            "aacbbaaa",
-            "aacbaabbaa",
-            "babaacaaaba",
-            "accccacb",
-            "bcaacacaa",
-            "bbcbabbbcc",
-            "cacabcccbbaaaacc",
-            "abbbaccbcbccbcb",
-            "bbaccbbbcab",
-            "bbbcbcbbab",
-            "abaababca",
-            "ccbcabbbab",
-            "bccabcbccbbc",
-            "cccbabcccaaaaac",
-            "bbcaaaaaa",
-            "accbcbbbcbbccc",
-            "abbbbacabacbb",
-            "bccbbcacc",
-            "cacbacccc",
-            "bccacbbccbcaaba",
-        ]
-
-        program = '''
-            ba=ab
-            ca=ac
-            cb=bc
-            ab=x
-            xb=bx
-            xc=
-            bc=(return)a
-            x=(return)c
-            ac=(return)b
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            c = Counter(input_data)
-            result = sorted(c.items(), key=lambda x: x[1])[0][0]
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-class Test3(TestCase):
-    def test_remove(self):
-        input_list = [
-            "aacbbaaa",
-            "aacbaabbaa",
-            "babaacaaaba",
-            "accccacb",
-            "bcaacacaa",
-            "bbcbabbbcc",
-            "cacabcccbbaaaacc",
-            "abbbaccbcbccbcb",
-            "bbaccbbbcab",
-            "bbbcbcbbab",
-            "abaababca",
-            "ccbcabbbab",
-            "bccabcbccbbc",
-            "cccbabcccaaaaac",
-            "bbcaaaaaa",
-            "accbcbbbcbbccc",
-            "abbbbacabacbb",
-            "bccbbcacc",
-            "cacbacccc",
-            "bccacbbccbcaaba",
-            "aaaaa",
-            "abaaaba",
-            "bababacccaa",
-        ]
-
-        program = '''
-            (start)a=
-            (end)a=
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            result = re.sub('^a+|a+$', '', input_data)
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
+        program = parse(rules("ba=ab", "ca=ac", "cb=bc"))
+        for value in ("a", "bab", "cacb", "bacbabaca", "ccaacbaaaa"):
+            self.assertEqual("".join(sorted(value)), execute(program, value))
 
     def test_palindrome(self):
-        input_list = [
-            "accaccacca",
-            "bbabaababb",
-            "ccacaacacc",
-            "bbcbaaaabcbb",
-            "caccac",
-            "bbccbbccbb",
-            "a",
-            "b",
-            "c",
-            "",
-            "abcba",
-            "cbccbc",
-            "abababa",
-            "aacaa",
-            "cbcacabc",
-            "ccbbbcc",
-            "acaccca",
-            "bbaccbbbcab",
-            "bbbcbcbbab",
-            "abaababca",
-            "ccbcabbbab",
-            "bccabcbccbbc",
-            "cccbabcccaaaaac",
-        ]
-
-        program = '''
-            XaX=(return)false
-            XbX=(return)false
-            XcX=(return)false
-            (end)aXa=
-            (end)bXb=
-            (end)cXc=
-            (start)a=(end)Xa
-            (start)b=(end)Xb
-            (start)c=(end)Xc
-            =(return)true
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            result = "true" if input_data == input_data[::-1] else "false"
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-class Test4(TestCase):
-    def test_hello2(self):
-        input_list = [
-            "a",
-            "b",
-            "c",
-            "",
-            "abcba",
-            "cbccbc",
-            "abababa",
-            "aacaa",
-        ]
-
-        program1 = '''
-            (once)=(start)hello
-        '''
-
-        program2 = '''
-            (once)=hello
-        '''
-
-        p1 = parse(program1)
-        p2 = parse(program2)
-
-        cases = []
-        for input_data in input_list:
-            result = "hello" + input_data
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p1, input_data))
-            self.assertEqual(expected, execute(p2, input_data))
+        program = parse(rules(
+            "XaX=(return)false",
+            "XbX=(return)false",
+            "XcX=(return)false",
+            "(end)aXa=",
+            "(end)bXb=",
+            "(end)cXc=",
+            "(start)a=(end)Xa",
+            "(start)b=(end)Xb",
+            "(start)c=(end)Xc",
+            "=(return)true",
+        ))
+        for value in ("", "a", "abcba", "abababa", "ccbbbcc", "abca"):
+            expected = "true" if value == value[::-1] else "false"
+            self.assertEqual(expected, execute(program, value))
 
     def test_reverse(self):
-        input_list = [
-            "ab",
-            "bc",
-            "ca",
-            "abcba",
-            "cbccbc",
-            "abababa",
-            "aacaa",
-            "bbbcbcbbab",
-            "abaababca",
-            "ccbcabbbab",
-            "bccabcbccbbc",
-            "cccbabcccaaaaac",
-        ]
-
-        program = '''
-            (once)=(start)X
-            Xa=(end)Ya
-            Xb=(end)Yb
-            Xc=(end)Yc
-            aY=(start)a
-            bY=(start)b
-            cY=(start)c
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            result = list(input_data)
-            result[0], result[-1] = result[-1], result[0]
-            cases.append((input_data, ''.join(result)))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-    def test_reverse2(self):
-        input_list = [
-            "a",
-            "b",
-            "c",
-            "ab",
-            "bc",
-            "ca",
-            "abcba",
-            "cbccbc",
-            "abababa",
-            "aacaa",
-            "bbbcbcbbab",
-            "abaababca",
-            "ccbcabbbab",
-            "bccabcbccbbc",
-            "cccbabcccaaaaac",
-        ]
-
-        program = '''
-            (once)=(end)XXXXXXXXXXXXXXXXXXXXXXX
-            aX=(end)a
-            bX=(end)b
-            cX=(end)c
-            X=
-        '''
-
-        p = parse(program)
-
-        cases = []
-        for input_data in input_list:
-            result = input_data[::-1]
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p, input_data))
-
-class Test5(TestCase):
-    def test_count(self):
-        input_list = ['{:b}'.format(i) for i in xrange(1, 64)]
-
-        program1 = '''
-            (once)=X
-            X1=(start)aX
-            X0=(start)X
-            Xa=aaX
-            X=
-        '''
-
-        program2 = '''
-            (once)=(end)XYXXYXXXYXXXXYXXXXXYXXXXXXY
-            0X=0
-            0Y=
-            1XY=(start)a
-            1XXY=(start)aa
-            1XXXY=(start)aaaa
-            1XXXXY=(start)aaaaaaaa
-            1XXXXXY=(start)aaaaaaaaaaaaaaaa
-            1XXXXXXY=(start)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aX=a
-            Y=
-        '''
-
-        p1 = parse(program1)
-        p2 = parse(program2)
-
-        cases = []
-        for input_data in input_list:
-            result = 'a' * int(input_data, 2)
-            cases.append((input_data, result))
-
-        for input_data, expected in cases:
-            self.assertEqual(expected, execute(p1, input_data))
-            self.assertEqual(expected, execute(p2, input_data))
+        program = parse(rules(
+            "(once)=(end)XXXXXXXXXXXXXXXXXXXXXXX",
+            "aX=(end)a",
+            "bX=(end)b",
+            "cX=(end)c",
+            "X=",
+        ))
+        for value in ("a", "ab", "abcba", "cbccbc", "cccbabcccaaaaac"):
+            self.assertEqual(value[::-1], execute(program, value))
 
 
+class InterpreterLimitTests(unittest.TestCase):
+    def test_operation_limit_stops_nonterminating_program(self):
+        old_limit = A2B.EXECUTOR_OPERATION_LIMIT
+        A2B.EXECUTOR_OPERATION_LIMIT = 3
+        try:
+            with self.assertRaises(A2BExecutionException) as raised:
+                execute(parse("a=a"), "a")
+            self.assertIn("Time Limit Exceeded", str(raised.exception))
+        finally:
+            A2B.EXECUTOR_OPERATION_LIMIT = old_limit
+
+    def test_string_length_limit_checks_input_and_generated_state(self):
+        old_limit = A2B.LINE_LENGTH_LIMIT
+        A2B.LINE_LENGTH_LIMIT = 3
+        try:
+            with self.assertRaises(A2BExecutionException):
+                execute(parse(""), "abcd")
+            with self.assertRaises(A2BExecutionException):
+                execute(parse("a=aaaa"), "a")
+        finally:
+            A2B.LINE_LENGTH_LIMIT = old_limit
+
+
+if __name__ == "__main__":
+    unittest.main()

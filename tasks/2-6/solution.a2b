@@ -1,0 +1,13 @@
+aaa=aa
+bbb=bb
+ccc=cc
+aa=X
+bb=X
+cc=X
+a=Y
+b=Y
+c=Y
+X=
+YY=(return)false
+Y=(return)true
+=(return)false

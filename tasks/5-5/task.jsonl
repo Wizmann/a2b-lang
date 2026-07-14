@@ -1,0 +1,1 @@
+{"id":"5-5","title":"A*B","input":"两个二进制数，用 * 隔开。","output":"输出二者之积的二进制表示。","constraints":{"alphabet":["0","1"],"separator":"*","min_value":1,"max_value":31,"max_a2b_lines":28},"samples":[{"input":"101*10","output":"1010"},{"input":"11*11","output":"1001"}]}

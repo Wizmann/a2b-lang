@@ -1,0 +1,11 @@
+ba=ab
+cb=bc
+ca=ac
+ab=(start)X
+Xa=aa
+X=b
+bc=(start)Y
+Yc=cc
+ac=(start)Y
+Ya=aa
+Y=b
