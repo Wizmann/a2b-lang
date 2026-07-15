@@ -1,0 +1,14 @@
+{
+  "alpha_equivalent_fraction_zero": true,
+  "behavior_duplicates_zero": true,
+  "cognitive_families_20": true,
+  "composition_components_all_effective": true,
+  "genuine_composition_fraction_15_to_25_percent": true,
+  "operational_descriptions_zero": true,
+  "passed": true,
+  "program_limits_respected": true,
+  "reference_verification_100_percent": true,
+  "split_sizes_40_10_10": true,
+  "synthesis_archetypes_60": true,
+  "three_archetypes_per_family": true
+}

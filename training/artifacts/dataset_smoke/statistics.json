@@ -1,0 +1,249 @@
+{
+  "alpha_equivalent_problem_count": 0,
+  "auxiliary_counts": {
+    "bounded_termination": 62,
+    "completion": 58,
+    "distinguishing_input": 60,
+    "execution": 60,
+    "finite_domain_equivalence": 120,
+    "ordering": 34,
+    "repair": 60,
+    "trace": 60
+  },
+  "baseline_by_split": {
+    "test": [
+      {
+        "attempted": 10,
+        "baseline": "identity",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "constant",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "single_rule_search",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "template_search",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      }
+    ],
+    "train": [
+      {
+        "attempted": 40,
+        "baseline": "identity",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 40,
+        "baseline": "constant",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 40,
+        "baseline": "single_rule_search",
+        "hidden_solved": 1,
+        "public_only_overfit": 0,
+        "public_solved": 1
+      },
+      {
+        "attempted": 40,
+        "baseline": "template_search",
+        "hidden_solved": 3,
+        "public_only_overfit": 0,
+        "public_solved": 3
+      }
+    ],
+    "validation": [
+      {
+        "attempted": 10,
+        "baseline": "identity",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "constant",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "single_rule_search",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      },
+      {
+        "attempted": 10,
+        "baseline": "template_search",
+        "hidden_solved": 0,
+        "public_only_overfit": 0,
+        "public_solved": 0
+      }
+    ]
+  },
+  "behavior_duplicates": 0,
+  "cognitive_family_count": 20,
+  "cognitive_family_distribution": {
+    "boundary_transform": 3,
+    "bounded_occurrence_edit": 3,
+    "carry_borrow_arithmetic": 3,
+    "conditional_transform": 3,
+    "copy_and_reuse": 3,
+    "count_argextreme": 3,
+    "count_threshold": 3,
+    "delimiter_field_logic": 3,
+    "endpoint_relation": 3,
+    "merge_and_deinterleave": 3,
+    "modular_property": 3,
+    "ordering_partition": 3,
+    "palindrome_and_pairing": 3,
+    "pointwise_transform": 3,
+    "positional_expansion": 3,
+    "positional_selection": 3,
+    "representation_arithmetic": 3,
+    "reversal_symmetry_transform": 3,
+    "run_structure": 3,
+    "segment_movement": 3
+  },
+  "composition_component_probe_failures": 0,
+  "composition_depth_distribution": {
+    "1": 50,
+    "2": 10
+  },
+  "constant_fraction_mean": 0.18523146100014587,
+  "execution_steps": {
+    "maximum": 99,
+    "mean": 9.78800170794193,
+    "minimum": 0
+  },
+  "genuine_composition_count": 10,
+  "genuine_composition_fraction": 0.16666666666666666,
+  "identity_fraction_mean": 0.09494707240710033,
+  "max_alpha_cluster_size": 1,
+  "operational_description_count": 0,
+  "program_line_distribution": {
+    "1": 2,
+    "2": 6,
+    "3": 8,
+    "4": 7,
+    "5": 6,
+    "6": 3,
+    "7": 5,
+    "8": 9,
+    "9": 2,
+    "10": 4,
+    "11": 3,
+    "13": 2,
+    "16": 1,
+    "17": 1,
+    "27": 1
+  },
+  "public_hidden_overlap": 0,
+  "reference_verification_fraction": 1.0,
+  "semantic_archetype_count": 60,
+  "semantic_archetype_distribution": {
+    "all_symbol_counts_odd_or_zero": 1,
+    "append_first_symbol_copy": 1,
+    "append_fixed_length_prefix_copy": 1,
+    "at_least_k_occurrences": 1,
+    "binary_addition": 1,
+    "binary_increment": 1,
+    "binary_subtraction": 1,
+    "binary_to_unary": 1,
+    "compare_field_lengths": 1,
+    "compress_all_runs": 1,
+    "compress_then_reverse": 1,
+    "contains_symbol_choose_delete_or_identity": 1,
+    "contains_symbol_choose_mapping": 1,
+    "delete_long_target_runs": 1,
+    "drop_kth_position": 1,
+    "drop_prefix_then_normalize_runs": 1,
+    "duplicate_odd_positions": 1,
+    "duplicate_then_filter": 1,
+    "duplicate_whole_input": 1,
+    "endpoints_equal": 1,
+    "exact_total_length": 1,
+    "filter_then_reverse": 1,
+    "filtered_length_at_most_k": 1,
+    "interleave_equal_fields": 1,
+    "keep_unique_most_frequent": 1,
+    "length_parity_choose_mapping": 1,
+    "length_remainder": 1,
+    "majority_of_two_symbols": 1,
+    "non_palindrome": 1,
+    "palindrome": 1,
+    "palindrome_after_filter": 1,
+    "remove_first_k_matches": 1,
+    "remove_last_k_matches": 1,
+    "repeat_by_one_based_index": 1,
+    "replace_first_then_sort": 1,
+    "replace_selected_symbol": 1,
+    "replace_target_on_both_ends": 1,
+    "return_first_symbol": 1,
+    "return_last_symbol": 1,
+    "return_unique_most_frequent": 1,
+    "reverse_whole_string": 1,
+    "rotate_then_symbol_swap": 1,
+    "rotate_to_first_delimiter": 1,
+    "select_left_field": 1,
+    "select_middle_symbol": 1,
+    "select_positions_by_parity": 1,
+    "select_right_field": 1,
+    "simultaneous_symbol_swap": 1,
+    "sort_then_deduplicate": 1,
+    "split_odd_even_positions": 1,
+    "stable_binary_partition": 1,
+    "swap_adjacent_pairs": 1,
+    "swap_boundary_runs": 1,
+    "swap_endpoints": 1,
+    "total_alphabet_sort": 1,
+    "translate_complete_alphabet": 1,
+    "trim_target_both_ends": 1,
+    "trim_then_duplicate": 1,
+    "unary_double": 1,
+    "unary_increment": 1
+  },
+  "source_type_distribution": {
+    "composed": 10,
+    "enumerated": 2,
+    "handwritten": 35,
+    "template": 13
+  },
+  "split_sizes": {
+    "test": 10,
+    "train": 40,
+    "validation": 10
+  },
+  "synthesis_problem_count": 60,
+  "task_domain_distribution": {
+    "counting_classification": 9,
+    "delimited_fields": 3,
+    "numeric_representation": 6,
+    "relational_classification": 9,
+    "sequence_construction": 12,
+    "sequence_reordering": 9,
+    "string_rewrite": 12
+  },
+  "terminating_fraction": 1.0
+}

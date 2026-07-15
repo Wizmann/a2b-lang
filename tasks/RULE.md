@@ -9,7 +9,7 @@
 
 ```text
 tasks/<题目 ID>/
-├── task.md
+├── TASK.md
 ├── task.jsonl
 ├── solution.a2b
 ├── groundtruth.py
@@ -18,7 +18,7 @@ tasks/<题目 ID>/
 └── testcase_full.jsonl
 ```
 
-- `task.md`：题面 Markdown，包含输入、输出、限制条件和全部样例。
+- `TASK.md`：题面 Markdown，包含输入、输出、限制条件和全部样例。
 - `task.jsonl`：题面 JSONL；一行一个 JSON 对象，至少包含 `id`、`input`、`output`、`constraints`、`samples`。题面中的输入、输出、限制条件和全部样例必须在同一对象内。
 - `solution.a2b`：用户提供并确认正确的 A=B 语言解法。
 - `groundtruth.py`：Python 参考实现；应提供可导入的 `solve(value)` 函数，并可从标准输入读取一行、向标准输出写出结果。

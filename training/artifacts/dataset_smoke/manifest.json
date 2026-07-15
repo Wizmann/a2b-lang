@@ -1,0 +1,20 @@
+{
+  "bulk_generation_started": false,
+  "commands": {
+    "audit": "python3 -m training.cli dataset-audit --artifact-dir training/artifacts/dataset_smoke",
+    "generation": "python3 -m training.cli dataset-generate --seed 20260715 --output training/artifacts/dataset_smoke",
+    "interpreter_tests": "python3 -m unittest -v test",
+    "report": "python3 -m training.cli dataset-report --artifact-dir training/artifacts/dataset_smoke --passed TEST_COUNT --duration SECONDS",
+    "training_tests": "python3 -m unittest discover -s training/tests -v"
+  },
+  "limits": {
+    "max_program_characters": 512,
+    "max_program_lines": 32
+  },
+  "pipeline": "cognitive-dataset-smoke",
+  "review_gate": true,
+  "rules": "training/DATASET_GENERATION_RULES.md",
+  "rules_version": "1.0.0",
+  "seed": 20260715,
+  "synthesis_problem_count": 60
+}
